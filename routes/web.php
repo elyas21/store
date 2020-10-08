@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +17,9 @@ use App\Http\Controllers\HomeController;
 */
 
 Route::get('/', function () {
-    return redirect('home');    
+    return redirect('home');   
+    
+    
 });
 
 
@@ -23,7 +27,35 @@ Route::get('/camera', function(){
     return view('guardStaff/camera');
 });
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', function(){
+ 
+    
+    
+    if (Auth::check()) {
+
+        // 'userType' , ['admin' , 'store', 'guard' , 'guardB'
+        if(Auth::user()->userType == 'admin'){
+
+        return redirect('admin/home');
+        }
+        else if(Auth::user()->userType == 'guard'){
+
+        return redirect('guard/home');
+        }
+        else if(Auth::user()->userType == 'guardB'){
+        return redirect('guardStaff/home');
+        }
+        else if(Auth::user()->userType == 'store'){
+        return redirect('store/home');
+        } else{
+        return redirect('404');
+        }
+        }
+    
+return view('home');
+
+
+})->name('home');
 
 Auth::routes(['register' => false]);
 
@@ -46,9 +78,7 @@ Route::get('qrGenerate/{id}' , function($id){
 
 
 
-Route::get('guardStaff/home', function(){
-    return view('guardStaff.home');
-})->name('guardStaff.home')->middleware('guardStaff');
+Route::get('guardStaff/home', 'GuardStafController@index')->name('guardStaff.home')->middleware('guardStaff');
 
 Route::get('guardStaff/addInv', 'PersonalInvController@create')->name('guardStaff.addInv')->middleware('guardStaff');
 Route::post('guardStaff/addInv', 'PersonalInvController@store')->name('guardStaff.store')->middleware('guardStaff');

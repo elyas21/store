@@ -19,6 +19,6 @@ class GuardStaff
         if(auth()->user()->userType == 'guardB'){
             return $next($request);
         }
-        return redirect('home')->with('error',"Only guardStuf can access!");
-        }
+        return redirect('home')->with('error',"Only guard can access!");
+    }
 }
